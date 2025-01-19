@@ -1,0 +1,79 @@
+# EXPENSE TRACKER
+import json
+from collections import defaultdict
+
+# Function to add an expense entry
+def add_expense(expenses_data):
+    try:
+        amount = float(input("Enter the amount spent: $"))
+        description = input("Enter a brief description of the expense: ")
+        category = input("Enter the expense category (e.g., food, transportation, entertainment): ").lower()
+
+        # Create an expense entry dictionary
+        expense = {
+            "amount": amount,
+            "description": description,
+            "category": category
+        }
+
+        # Add expense to data structure
+        expenses_data.append(expense)
+
+        print("Expense added successfully.")
+        return expenses_data
+
+    except ValueError:
+        print("Invalid input. Please enter a valid amount.")
+        return expenses_data
+
+# Function to save expenses to a file (JSON format)
+def save_expenses(expenses_data, file_name="expenses.json"):
+    with open(file_name, "w") as file:
+        json.dump(expenses_data, file, indent=4)
+    print(f"Expenses saved to {file_name}")
+
+# Function to load expenses from a file
+def load_expenses(file_name="expenses.json"):
+    try:
+        with open(file_name, "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []  # Return empty list if file does not exist
+
+# Function to display the expense summary
+def show_summary(expenses_data):
+    total = 0
+    category_summary = defaultdict(float)
+    
+    for expense in expenses_data:
+        total += expense['amount']
+        category_summary[expense['category']] += expense['amount']
+
+    print("\nTotal Expenses: $", total)
+    print("\nCategory-wise breakdown:")
+    for category, total in category_summary.items():
+        print(f"{category.capitalize()}: ${total:.2f}")
+
+# Main function to run the program
+def run_expense_tracker():
+    expenses_data = load_expenses()  # Load existing expenses
+
+    while True:
+        print("\n--- Expense Tracker ---")
+        print("1. Add an expense")
+        print("2. Show expense summary")
+        print("3. Save and exit")
+        user_choice = input("Enter your choice: ")
+
+        if user_choice == '1':
+            expenses_data = add_expense(expenses_data)
+        elif user_choice == '2':
+            show_summary(expenses_data)
+        elif user_choice == '3':
+            save_expenses(expenses_data)
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if _name_ == "_main_":
+    run_expense_tracker()
